@@ -49,6 +49,9 @@ Card::Card(Card& cardToCopy)
 {
     this->cardSprite = sf::Sprite(Card::cardsTexture);
     this->cardSprite.setTextureRect(Card::cardBackTextureRect);
+    this->cardSprite.setPosition(cardToCopy.cardSprite.getPosition());
+    this->cardSprite.setRotation(cardToCopy.cardSprite.getRotation());
+    this->cardSprite.setScale(cardToCopy.cardSprite.getScale());
     this->cardFrontTexture = cardToCopy.cardFrontTexture;
     this->cardName = cardToCopy.cardName;
 }
@@ -77,6 +80,46 @@ void Card::InitializeClass()
     }
 }
 
+void Card::SetPosition(sf::Vector2f& cardPos)
+{
+    this->cardSprite.setPosition(cardPos);
+}
+void Card::SetScale(sf::Vector2f& cardScale)
+{
+    this->cardSprite.setScale(cardScale);
+}
+void Card::SetRotation(float& degrees)
+{
+    this->cardSprite.setRotation(degrees);
+}
+
+void Card::SetTransform(sf::Vector2f &location, float& rotation, sf::Vector2f &scale)
+{
+    this->cardSprite.setPosition(location);
+    this->cardSprite.setRotation(rotation);
+    this->cardSprite.setScale(scale);
+}
+
+void Card::SetPosition(sf::Vector2f&& cardPos)
+{
+    this->cardSprite.setPosition(cardPos);
+}
+void Card::SetScale(sf::Vector2f&& cardScale)
+{
+    this->cardSprite.setScale(cardScale);
+}
+void Card::SetRotation(float&& degrees)
+{
+    this->cardSprite.setRotation(degrees);
+}
+
+void Card::SetTransform(sf::Vector2f&& location, float&& rotation, sf::Vector2f&& scale)
+{
+    this->cardSprite.setPosition(location);
+    this->cardSprite.setRotation(rotation);
+    this->cardSprite.setScale(scale);
+}
+
 void Card::FlipCard()
 {
     if(this->fliped)
@@ -88,13 +131,6 @@ void Card::FlipCard()
         this->cardSprite.setTextureRect(this->cardFrontTexture);
     }
     this->fliped = !this->fliped;
-}
-
-std::ostream& operator<<(std::ostream& stream, Card card)
-{
-    stream << *card.cardName;
-    
-    return stream;
 }
 
 void Card::QueForDraw(sf::RenderWindow* win)

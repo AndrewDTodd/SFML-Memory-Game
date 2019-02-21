@@ -18,6 +18,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
+#include <iostream>
 #include "Card.hpp"
 
 int main(int argc, char const** argv)
@@ -36,6 +37,8 @@ int main(int argc, char const** argv)
     
     Card card = Card::deck[1];
     card.FlipCard();
+    
+    std::cout << card << std::endl;
 
     // Start the game loop
     while (window.isOpen())

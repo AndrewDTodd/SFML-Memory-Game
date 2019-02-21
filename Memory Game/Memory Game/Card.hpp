@@ -37,11 +37,29 @@ public:
     
     static void InitializeClass();
     
+    void SetPosition(sf::Vector2f& cardPos);
+    void SetScale(sf::Vector2f& cardScale);
+    void SetRotation(float& degrees);
+    
+    void SetPosition(sf::Vector2f&& cardPos);
+    void SetScale(sf::Vector2f&& cardScale);
+    void SetRotation(float&& degrees);
+    
+    void SetTransform(sf::Vector2f& location, float& rotation, sf::Vector2f& scale);
+    void SetTransform(sf::Vector2f&& location, float&& rotation, sf::Vector2f&& scale);
+    
     static Card deck[52];
     
     void FlipCard();
     
-    friend std::ostream& operator<<(std::ostream& stream, Card& card);
+    friend std::ostream& operator<<(std::ostream& stream, Card& card)
+    {
+        sf::Vector2f pos = card.cardSprite.getPosition();
+        
+        stream << *card.cardName << std::endl << "Location: (" << pos.x << "," << pos.y << ")";
+        
+        return stream;
+    }
     
     void QueForDraw(sf::RenderWindow* window);
 };

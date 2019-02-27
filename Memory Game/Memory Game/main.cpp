@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include "Card.hpp"
+#include "GridGen.hpp"
 
 int main(int argc, char const** argv)
 {
@@ -35,10 +36,16 @@ int main(int argc, char const** argv)
 
     Card::InitializeClass();
     
-    Card card = Card::deck[1];
-    card.FlipCard();
+    Card card[] = {Card::deck[0], Card::deck[1], Card::deck[2], Card::deck[3]};
+    card[0].FlipCard();
+    card[3].FlipCard();
     
-    std::cout << card << std::endl;
+    GridGenerator<Card>cardGrid(2,2,1920,1080,card);
+    
+    std::cout << cardGrid.gridHeight << std::endl;
+    std::cout << cardGrid.gridWidth << std::endl;
+    
+    cardGrid.SetCellTransforms();
 
     // Start the game loop
     while (window.isOpen())
@@ -61,7 +68,7 @@ int main(int argc, char const** argv)
         // Clear screen
         window.clear();
 
-        card.QueForDraw(&window);
+        window.draw(cardGrid);
 
         // Update the window
         window.display();

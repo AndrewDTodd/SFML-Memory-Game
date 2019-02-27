@@ -133,7 +133,7 @@ void Card::FlipCard()
     this->fliped = !this->fliped;
 }
 
-void Card::QueForDraw(sf::RenderWindow* win)
+void Card::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    win->draw(this->cardSprite);
+    target.draw(this->cardSprite, states);
 }

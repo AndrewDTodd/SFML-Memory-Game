@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
 
-class Card
+class Card : public sf::Drawable
 {
 private:
     static sf::Texture cardsTexture;
@@ -61,7 +61,7 @@ public:
         return stream;
     }
     
-    void QueForDraw(sf::RenderWindow* window);
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 
 #endif /* Card_hpp */

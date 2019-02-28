@@ -27,6 +27,8 @@ private:
     bool fliped = false;
     
 public:
+    
+    sf::Vector2f dimentions;
     std::string* cardName;
     
     Card();

@@ -36,6 +36,10 @@ Card::Card(sf::IntRect cardTexRec, std::string* cardName)
     this->cardSprite.setTextureRect(Card::cardBackTextureRect);
     this->cardFrontTexture = cardTexRec;
     this->cardName = cardName;
+    
+    sf::IntRect rec = cardSprite.getTextureRect();
+    
+    this->dimentions = sf::Vector2f(rec.width, rec.height);
 }
 /*Card::Card(Card&& cardToMove)
 :cardFrontTexture(cardToMove.cardFrontTexture),
@@ -47,13 +51,13 @@ cardName(cardToMove.cardName)
 }*/
 Card::Card(Card& cardToCopy)
 {
-    this->cardSprite = sf::Sprite(Card::cardsTexture);
-    this->cardSprite.setTextureRect(Card::cardBackTextureRect);
+    this->cardSprite = cardToCopy.cardSprite;
     this->cardSprite.setPosition(cardToCopy.cardSprite.getPosition());
     this->cardSprite.setRotation(cardToCopy.cardSprite.getRotation());
     this->cardSprite.setScale(cardToCopy.cardSprite.getScale());
     this->cardFrontTexture = cardToCopy.cardFrontTexture;
     this->cardName = cardToCopy.cardName;
+    this->dimentions = cardToCopy.dimentions;
 }
 
 Card::~Card()

@@ -19,7 +19,7 @@ template<typename Type>
 struct GridCell
 {
     sf::Vector2i location;
-    Type cellContents;
+    Type* cellContents;
 };
 
 template<typename Type>
@@ -82,7 +82,7 @@ public:
         
         for(uint8_t i = 0; i < arrayLength; i++)
         {
-            this->grid[i].cellContents = cellContentsArray[i];
+            this->grid[i].cellContents = &cellContentsArray[i];
         }
         
         for (uint8_t r = 0; r < rows; r++)
@@ -102,7 +102,7 @@ public:
         
         for(uint8_t i = 0; i < arrayLength; i++)
         {
-            this->grid[i].cellContents = cellContentsArray[i];
+            this->grid[i].cellContents = &cellContentsArray[i];
         }
         
         for (uint8_t r = 0; r < rows; r++)
@@ -139,7 +139,7 @@ public:
         
         for(uint8_t i = 0; i < arrayLength; i++)
         {
-            this->grid[i].cellContents = cellContentsArray[i];
+            this->grid[i].cellContents = &cellContentsArray[i];
         }
     }
     
@@ -147,8 +147,6 @@ public:
     {
         uint16_t cellWidth = this->gridWidth / this->columns;
         uint16_t cellHeight = this->gridHeight / this->rows;
-        
-        uint8_t arrayLength = this->rows * this->columns;
         
         float rotation = this->getRotation();
         sf::Vector2f scale = this->getScale();
@@ -159,7 +157,28 @@ public:
             {
                 sf::Vector2f location = sf::Vector2f(c*cellWidth, r*cellHeight);
                 
-                this->grid[this->rows*r + c].cellContents.SetTransform(location, rotation, scale);
+                this->grid[this->rows*r + c].cellContents->SetTransform(location, rotation, scale);
+            }
+        }
+    }
+    
+    void FillCells()
+    {
+        uint16_t cellWidth = this->gridWidth / this->columns;
+        uint16_t cellHeight = this->gridHeight / this->rows;
+        
+        for(uint8_t r = 0; r < this->rows; r++)
+        {
+            for(uint8_t c = 0; c < this->columns; c++)
+            {
+                uint8_t index = this->rows*r + c;
+                
+                uint16_t widthStretch = cellWidth / this->grid[index].cellContents->dimentions.x;
+                uint16_t heightStretch = cellHeight / this->grid[index].cellContents->dimentions.y;
+                
+                float scale = heightStretch > widthStretch ? widthStretch:heightStretch;
+                
+                this->grid[index].cellContents->SetScale(sf::Vector2f(scale,scale));
             }
         }
     }
@@ -184,7 +203,7 @@ public:
         {
             for(uint8_t u = 0; u < this->columns; u++)
             {
-                target.draw((Type)this->grid[this->rows*i + u].cellContents);
+                target.draw(*(Type*)this->grid[this->rows*i + u].cellContents);
             }
         }
     }

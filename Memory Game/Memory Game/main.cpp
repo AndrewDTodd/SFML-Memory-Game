@@ -36,16 +36,15 @@ int main(int argc, char const** argv)
 
     Card::InitializeClass();
     
-    Card card[] = {Card::deck[0], Card::deck[1], Card::deck[2], Card::deck[3]};
-    card[0].FlipCard();
-    card[3].FlipCard();
+    //Card card[] = {Card::deck[0], Card::deck[1], Card::deck[2], Card::deck[3], Card::deck[4], Card::deck[5], Card::deck[6],Card::deck[7],Card::deck[8], Card::deck[9],Card::deck[10],Card::deck[11],Card::deck[12]};
     
-    GridGenerator<Card>cardGrid(2,2,1920,1080,card);
     
-    std::cout << cardGrid.gridHeight << std::endl;
-    std::cout << cardGrid.gridWidth << std::endl;
+    GridGenerator<Card>cardGrid(4,13,1920,1080,Card::deck);
     
+    Card card = Card::deck[4];
+
     cardGrid.SetCellTransforms();
+    cardGrid.FillCells();
 
     // Start the game loop
     while (window.isOpen())
@@ -68,7 +67,7 @@ int main(int argc, char const** argv)
         // Clear screen
         window.clear();
 
-        window.draw(cardGrid);
+        window.draw(card);
 
         // Update the window
         window.display();

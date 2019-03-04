@@ -40,6 +40,8 @@ Card::Card(sf::IntRect cardTexRec, std::string* cardName)
     sf::IntRect rec = cardSprite.getTextureRect();
     
     this->dimentions = sf::Vector2f(rec.width, rec.height);
+    
+    this->scale = 1;
 }
 /*Card::Card(Card&& cardToMove)
 :cardFrontTexture(cardToMove.cardFrontTexture),
@@ -76,7 +78,7 @@ void Card::InitializeClass()
     int i = 0;
     for(int y = 0; y < 492; (y+=123))
     {
-        for(int x = 0; x < 948; (x+=79))
+        for(int x = 0; x <= 948; (x+=79))
         {
             Card::deck[i] = Card(sf::IntRect(x,y,79,123), &Card::cardNames[i]);
             i++;
@@ -88,40 +90,50 @@ void Card::SetPosition(sf::Vector2f& cardPos)
 {
     this->cardSprite.setPosition(cardPos);
 }
-void Card::SetScale(sf::Vector2f& cardScale)
+void Card::SetScale(float& scale)
 {
-    this->cardSprite.setScale(cardScale);
+    this->cardSprite.setScale(sf::Vector2f(scale,scale));
+    this->scale = scale;
+}
+float Card::GetScale()
+{
+    return this->scale;
 }
 void Card::SetRotation(float& degrees)
 {
     this->cardSprite.setRotation(degrees);
 }
 
-void Card::SetTransform(sf::Vector2f &location, float& rotation, sf::Vector2f &scale)
+void Card::SetTransform(sf::Vector2f &location, float& rotation, float& scale)
 {
     this->cardSprite.setPosition(location);
     this->cardSprite.setRotation(rotation);
-    this->cardSprite.setScale(scale);
+    this->cardSprite.setScale(sf::Vector2f(scale,scale));
+    
+    this->scale = scale;
 }
 
 void Card::SetPosition(sf::Vector2f&& cardPos)
 {
     this->cardSprite.setPosition(cardPos);
 }
-void Card::SetScale(sf::Vector2f&& cardScale)
+void Card::SetScale(float&& scale)
 {
-    this->cardSprite.setScale(cardScale);
+    this->cardSprite.setScale(sf::Vector2f(scale,scale));
+    this->scale = scale;
 }
 void Card::SetRotation(float&& degrees)
 {
     this->cardSprite.setRotation(degrees);
 }
 
-void Card::SetTransform(sf::Vector2f&& location, float&& rotation, sf::Vector2f&& scale)
+void Card::SetTransform(sf::Vector2f&& location, float&& rotation, float&& scale)
 {
     this->cardSprite.setPosition(location);
     this->cardSprite.setRotation(rotation);
-    this->cardSprite.setScale(scale);
+    this->cardSprite.setScale(sf::Vector2f(scale,scale));
+    
+    this->scale = scale;
 }
 
 void Card::FlipCard()
@@ -135,6 +147,21 @@ void Card::FlipCard()
         this->cardSprite.setTextureRect(this->cardFrontTexture);
     }
     this->fliped = !this->fliped;
+}
+void Card::FlipDeckCards()
+{
+    for(uint8_t c = 0; c < 52; c++)
+    {
+        if(Card::deck[c].fliped)
+        {
+            Card::deck[c].cardSprite.setTextureRect(Card::cardBackTextureRect);
+        }
+        else
+        {
+            Card::deck[c].cardSprite.setTextureRect(Card::deck[c].cardFrontTexture);
+        }
+        Card::deck[c].fliped = !Card::deck[c].fliped;
+    }
 }
 
 void Card::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -29,6 +29,7 @@ private:
 public:
     
     sf::Vector2f dimentions;
+    float scale;
     std::string* cardName;
     
     Card();
@@ -40,19 +41,21 @@ public:
     static void InitializeClass();
     
     void SetPosition(sf::Vector2f& cardPos);
-    void SetScale(sf::Vector2f& cardScale);
+    void SetScale(float& scale);
+    float GetScale();
     void SetRotation(float& degrees);
     
     void SetPosition(sf::Vector2f&& cardPos);
-    void SetScale(sf::Vector2f&& cardScale);
+    void SetScale(float&& scale);
     void SetRotation(float&& degrees);
     
-    void SetTransform(sf::Vector2f& location, float& rotation, sf::Vector2f& scale);
-    void SetTransform(sf::Vector2f&& location, float&& rotation, sf::Vector2f&& scale);
+    void SetTransform(sf::Vector2f& location, float& rotation, float& scale);
+    void SetTransform(sf::Vector2f&& location, float&& rotation, float&& scale);
     
     static Card deck[52];
     
     void FlipCard();
+    static void FlipDeckCards();
     
     friend std::ostream& operator<<(std::ostream& stream, Card& card)
     {

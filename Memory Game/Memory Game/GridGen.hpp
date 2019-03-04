@@ -44,7 +44,7 @@ public:
         {
             for (uint8_t  c = 0; c < columns; c++)
             {
-                this->grid[rows*r + c].location = sf::Vector2i(r,c);
+                this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
         
@@ -63,7 +63,7 @@ public:
         {
             for (uint8_t  c = 0; c < columns; c++)
             {
-                this->grid[rows*r + c].location = sf::Vector2i(r,c);
+                this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
     }
@@ -89,7 +89,7 @@ public:
         {
             for (uint8_t  c = 0; c < columns; c++)
             {
-                this->grid[rows*r + c].location = sf::Vector2i(r,c);
+                this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
     }
@@ -109,7 +109,7 @@ public:
         {
             for (uint8_t  c = 0; c < columns; c++)
             {
-                this->grid[rows*r + c].location = sf::Vector2i(r,c);
+                this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
     }
@@ -149,36 +149,48 @@ public:
         uint16_t cellHeight = this->gridHeight / this->rows;
         
         float rotation = this->getRotation();
-        sf::Vector2f scale = this->getScale();
         
         for(uint8_t r = 0; r < this->rows; r++)
         {
             for(uint8_t c = 0; c < this->columns ; c++)
             {
-                sf::Vector2f location = sf::Vector2f(c*cellWidth, r*cellHeight);
+                float scale = this->grid[this->columns*r +c].cellContents->scale * this->getScale().x;
+                float whiteSpaceX = cellWidth - (this->grid[this->columns*r +c].cellContents->dimentions.x * this->grid[this->columns*r +c].cellContents->scale);
+                float whiteSpaceY = cellHeight - (this->grid[this->columns*r +c].cellContents->dimentions.y * this->grid[this->columns*r +c].cellContents->scale);
+                float xLocation = c*cellWidth + (whiteSpaceX / 2);
+                float yLocation = r*cellHeight + (whiteSpaceY / 2);
                 
-                this->grid[this->rows*r + c].cellContents->SetTransform(location, rotation, scale);
+                sf::Vector2f location = sf::Vector2f(xLocation, yLocation);
+                
+                this->grid[this->columns*r + c].cellContents->SetTransform(location, rotation, scale);
             }
         }
     }
     
-    void FillCells()
+    void ClampCellContents()
     {
         uint16_t cellWidth = this->gridWidth / this->columns;
         uint16_t cellHeight = this->gridHeight / this->rows;
+        
+        std::cout << "cell dimentions: " << cellWidth << "," << cellHeight << std::endl;
         
         for(uint8_t r = 0; r < this->rows; r++)
         {
             for(uint8_t c = 0; c < this->columns; c++)
             {
-                uint8_t index = this->rows*r + c;
+                uint8_t index = this->columns*r + c;
                 
-                uint16_t widthStretch = cellWidth / this->grid[index].cellContents->dimentions.x;
-                uint16_t heightStretch = cellHeight / this->grid[index].cellContents->dimentions.y;
+                float maxXScale = cellWidth / this->grid[index].cellContents->dimentions.x;
                 
-                float scale = heightStretch > widthStretch ? widthStretch:heightStretch;
+                float maxYScale = cellHeight / this->grid[index].cellContents->dimentions.y;
                 
-                this->grid[index].cellContents->SetScale(sf::Vector2f(scale,scale));
+                std::cout << "Maximum scales: " << maxXScale << "," << maxYScale << std::endl;
+                
+                float scale = maxXScale > maxYScale ? maxYScale:maxXScale;
+                std::cout << "scale is: " << scale << std::endl;
+                
+                this->grid[index].cellContents->SetScale(scale);
+                std::cout << "sprite scale is now: " << this->grid[index].cellContents->GetScale() << std::endl;
             }
         }
     }
@@ -189,7 +201,7 @@ public:
         {
             for(uint8_t u = 0; u < Grid.columns; u++)
             {
-                stream << (Type)Grid.grid[Grid.rows*i + u].cellContents << ' ';
+                stream << (Type)Grid.grid[Grid.columns*i + u].cellContents << ' ';
             }
             stream << std::endl;
         }
@@ -203,7 +215,7 @@ public:
         {
             for(uint8_t u = 0; u < this->columns; u++)
             {
-                target.draw(*(Type*)this->grid[this->rows*i + u].cellContents);
+                target.draw(*(Type*)this->grid[this->columns*i + u].cellContents);
             }
         }
     }

@@ -21,9 +21,58 @@
 #include <iostream>
 #include "Card.hpp"
 #include "GridGen.hpp"
+#include <stdlib.h>
+#include <time.h>
+
+template<typename Type>
+void ShuffleArray(Type* array, uint8_t& length)
+{
+    srand(time(nullptr));
+    
+    for(uint8_t i = 0; i < length; i++)
+    {
+        Type holder = array[i];
+        
+        uint8_t index = rand() % length;
+        
+        array[i] = array[index];
+        array[index] = holder;
+    }
+}
+template<typename Type>
+void ShuffleArray(Type* array, uint8_t&& length)
+{
+    srand(time(nullptr));
+    
+    for(uint8_t i = 0; i < length; i++)
+    {
+        Type holder = array[i];
+        
+        uint8_t index = rand() % length;
+        
+        array[i] = array[index];
+        array[index] = holder;
+    }
+}
 
 int main(int argc, char const** argv)
 {
+    Card::InitializeClass();
+    
+    Card::FlipDeckCards();
+    
+    ShuffleArray<Card>(Card::deck, 52);
+    
+    
+    //Card cards[] = {Card::deck[0],Card::deck[1],Card::deck[2],Card::deck[3]};
+    
+    GridGenerator<Card>cardGrid(4,13,1920,1080,Card::deck);
+    
+    cardGrid.ClampCellContents();
+    cardGrid.SetCellTransforms();
+    
+    std::cout << Card::deck[0] << std::endl;
+    
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML window");
 
@@ -33,20 +82,6 @@ int main(int argc, char const** argv)
         return EXIT_FAILURE;
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
-    Card::InitializeClass();
-    
-    //Card card[] = {Card::deck[0], Card::deck[1], Card::deck[2], Card::deck[3], Card::deck[4], Card::deck[5], Card::deck[6],Card::deck[7],Card::deck[8], Card::deck[9],Card::deck[10],Card::deck[11],Card::deck[12]};
-    
-    
-    Card::FlipDeckCards();
-    
-    Card cards[] = {Card::deck[0],Card::deck[1],Card::deck[2],Card::deck[3]};
-    
-    GridGenerator<Card>cardGrid(4,13,1920,1080,Card::deck);
-    
-    cardGrid.ClampCellContents();
-    cardGrid.SetCellTransforms();
 
     // Start the game loop
     while (window.isOpen())

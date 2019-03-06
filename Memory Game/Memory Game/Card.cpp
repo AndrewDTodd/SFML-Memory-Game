@@ -30,7 +30,8 @@ Card::Card()
 {
     this->cardSprite = sf::Sprite();
 }
-Card::Card(sf::IntRect cardTexRec, std::string* cardName)
+Card::Card(sf::IntRect cardTexRec, std::string* cardName, uint8_t& cardNumber)
+: cardNumber(cardNumber)
 {
     this->cardSprite = sf::Sprite(Card::cardsTexture);
     this->cardSprite.setTextureRect(Card::cardBackTextureRect);
@@ -60,6 +61,8 @@ Card::Card(Card& cardToCopy)
     this->cardFrontTexture = cardToCopy.cardFrontTexture;
     this->cardName = cardToCopy.cardName;
     this->dimentions = cardToCopy.dimentions;
+    this->scale = cardToCopy.scale;
+    this->cardNumber = cardToCopy.cardNumber;
 }
 
 Card::~Card()
@@ -76,12 +79,15 @@ void Card::InitializeClass()
     }
     
     int i = 0;
+    uint8_t cn = 0;
     for(int y = 0; y < 492; (y+=123))
     {
+        cn = 0;
         for(int x = 0; x <= 948; (x+=79))
         {
-            Card::deck[i] = Card(sf::IntRect(x,y,79,123), &Card::cardNames[i]);
+            Card::deck[i] = Card(sf::IntRect(x,y,79,123), &Card::cardNames[i], cn);
             i++;
+            cn++;
         }
     }
 }

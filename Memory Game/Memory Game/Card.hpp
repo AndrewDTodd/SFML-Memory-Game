@@ -31,9 +31,10 @@ public:
     sf::Vector2f dimentions;
     float scale;
     std::string* cardName;
+    uint8_t cardNumber;
     
     Card();
-    Card(sf::IntRect cardTexRec, std::string* cardName);
+    Card(sf::IntRect cardTexRec, std::string* cardName, uint8_t& cardNumber);
     //Card(Card&& cardToMove);
     Card(Card& cardToCopy);
     ~Card();
@@ -61,7 +62,7 @@ public:
     {
         sf::Vector2f pos = card.cardSprite.getPosition();
         
-        stream << *card.cardName << std::endl << "Location: (" << pos.x << "," << pos.y << ")";
+        stream << *card.cardName << " Card Number: " << (int)card.cardNumber << std::endl << "Location: (" << pos.x << "," << pos.y << ")";
         
         return stream;
     }

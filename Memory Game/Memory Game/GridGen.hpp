@@ -172,7 +172,7 @@ public:
         uint16_t cellWidth = this->gridWidth / this->columns;
         uint16_t cellHeight = this->gridHeight / this->rows;
         
-        std::cout << "cell dimentions: " << cellWidth << "," << cellHeight << std::endl;
+        //std::cout << "cell dimentions: " << cellWidth << "," << cellHeight << std::endl;
         
         for(uint8_t r = 0; r < this->rows; r++)
         {
@@ -184,13 +184,13 @@ public:
                 
                 float maxYScale = cellHeight / this->grid[index].cellContents->dimentions.y;
                 
-                std::cout << "Maximum scales: " << maxXScale << "," << maxYScale << std::endl;
+                //std::cout << "Maximum scales: " << maxXScale << "," << maxYScale << std::endl;
                 
                 float scale = maxXScale > maxYScale ? maxYScale:maxXScale;
-                std::cout << "scale is: " << scale << std::endl;
+                //std::cout << "scale is: " << scale << std::endl;
                 
                 this->grid[index].cellContents->SetScale(scale);
-                std::cout << "sprite scale is now: " << this->grid[index].cellContents->GetScale() << std::endl;
+                //std::cout << "sprite scale is now: " << this->grid[index].cellContents->GetScale() << std::endl;
             }
         }
     }

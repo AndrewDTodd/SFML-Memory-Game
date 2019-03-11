@@ -53,6 +53,8 @@ public:
     void SetTransform(sf::Vector2f& location, float& rotation, float& scale);
     void SetTransform(sf::Vector2f&& location, float&& rotation, float&& scale);
     
+    sf::FloatRect getGlobalBounds();
+    
     static Card deck[52];
     
     void FlipCard();

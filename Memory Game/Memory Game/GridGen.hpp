@@ -35,10 +35,17 @@ public:
     uint16_t gridWidth = 0;
     uint16_t gridHeight = 0;
     
-    GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t&  width, uint16_t& height)
+    sf::FloatRect gridBoundingBox;
+    
+    sf::FloatRect* cellsBoundingBoxes;
+    
+    std::Vector<Type> lastFourCards;
+    
+    GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t& xPos, uint16_t& yPos, uint16_t&  width, uint16_t& height)
     :Transformable()
     {
         this->grid = new GridCell<Type>[rows*columns];
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
         
         for (uint8_t r = 0; r < rows; r++)
         {
@@ -53,11 +60,15 @@ public:
         
         this->gridWidth = width;
         this->gridHeight = height;
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
     }
-    GridGenerator(uint8_t&& rows, uint8_t&& columns, uint16_t&& width, uint16_t&& height)
+    GridGenerator(uint8_t&& rows, uint8_t&& columns,uint16_t&& xPos, uint16_t&& yPos, uint16_t&& width, uint16_t&& height)
     :Transformable(), rows(rows), columns(columns), gridWidth(width), gridHeight(height)
     {
         this->grid = new GridCell<Type>[rows*columns];
+        
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
         
         for (uint8_t r = 0; r < rows; r++)
         {
@@ -66,14 +77,18 @@ public:
                 this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
     }
-    GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t& width, uint16_t& height, Type* cellContentsArray)
+    GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t& xPos, uint16_t& yPos, uint16_t& width, uint16_t& height, Type* cellContentsArray)
     :Transformable()
     {
         uint8_t arrayLength = rows * columns;
         
         this->grid = new GridCell<Type>[arrayLength];
         
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
+        
         this->rows = rows;
         this->columns = columns;
         
@@ -92,13 +107,17 @@ public:
                 this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
     }
-    GridGenerator(uint8_t&& rows, uint8_t&& columns, uint16_t&& width, uint16_t&& height, Type* cellContentsArray)
+    GridGenerator(uint8_t&& rows, uint8_t&& columns, uint16_t&& xPos, uint16_t&& yPos, uint16_t&& width, uint16_t&& height, Type* cellContentsArray)
     :Transformable(), rows(rows), columns(columns), gridWidth(width), gridHeight(height)
     {
         uint8_t arrayLength = this->rows * this->columns;
         
         this->grid = new GridCell<Type>[arrayLength];
+        
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
         
         for(uint8_t i = 0; i < arrayLength; i++)
         {
@@ -112,19 +131,33 @@ public:
                 this->grid[columns*r + c].location = sf::Vector2i(r,c);
             }
         }
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
     }
-    GridGenerator(uint8_t& rows, uint8_t& columns, GridCell<Type>* cellContentsArray)
+    GridGenerator(uint8_t& rows, uint8_t& columns, GridCell<Type>* cellContentsArray, uint16_t& xPos, uint16_t& yPos, uint16_t& width, uint16_t& height)
     :Transformable()
     {
         this->grid = cellContentsArray;
         
         this->rows = rows;
         this->columns = columns;
+        
+        this->gridWidth = width;
+        this->gridHeight = height;
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
+        
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
+
     }
-    GridGenerator(uint8_t&& rows, uint8_t&& columns, GridCell<Type>* cellContentsArray)
-    :Transformable(), rows(rows), columns(columns)
+    GridGenerator(uint8_t&& rows, uint8_t&& columns, GridCell<Type>* cellContentsArray, uint16_t&& xPos, uint16_t&& yPos, uint16_t&& width, uint16_t&& height)
+    :Transformable(), rows(rows), columns(columns), gridWidth(width), gridHeight(height)
     {
         this->grid = cellContentsArray;
+        
+        this->gridBoundingBox = sf::FloatRect(xPos,yPos,width,height);
+        
+        this->cellsBoundingBoxes = new sf::FloatRect[rows*columns];
     }
     
     ~GridGenerator()
@@ -140,6 +173,14 @@ public:
         for(uint8_t i = 0; i < arrayLength; i++)
         {
             this->grid[i].cellContents = &cellContentsArray[i];
+        }
+        
+        for (uint8_t r = 0; r < rows; r++)
+        {
+            for (uint8_t  c = 0; c < columns; c++)
+            {
+                this->grid[columns*r + c].location = sf::Vector2i(r,c);
+            }
         }
     }
     
@@ -163,6 +204,8 @@ public:
                 sf::Vector2f location = sf::Vector2f(xLocation, yLocation);
                 
                 this->grid[this->columns*r + c].cellContents->SetTransform(location, rotation, scale);
+                
+                this->cellsBoundingBoxes[this->columns*r + c] = this->grid[this->columns*r + c].cellContents->getGlobalBounds();
             }
         }
     }
@@ -191,6 +234,46 @@ public:
                 
                 this->grid[index].cellContents->SetScale(scale);
                 //std::cout << "sprite scale is now: " << this->grid[index].cellContents->GetScale() << std::endl;
+            }
+        }
+    }
+    
+    void HandleMouseEvent(sf::Vector2i location)
+    {
+        std::cout << "Entering Mouse Event" << std::endl;
+        
+        std::cout << "Screen Space Mouse Position: (" << location.x << "," << location.y << ")" << std::endl;
+        for (uint8_t r = 0; r < this->rows; r++)
+        {
+            for (uint8_t  c = 0; c < this->columns; c++)
+            {
+                /*
+                std::cout << "Cell : (" << (int)r << "," << (int)c << ")" << std::endl
+                << "Bounding Box left: " << this->cellsBoundingBoxes[this->columns*r + c].left << " right: " << this->cellsBoundingBoxes[this->columns*r + c].top << std::endl
+                << "Bounding Box width: " << this->cellsBoundingBoxes[this->columns*r + c].width << " height: " << this->cellsBoundingBoxes[this->columns*r + c].height << std::endl;
+                */
+                if(this->cellsBoundingBoxes[this->columns*r + c].contains(location.x,location.y))
+                {
+                    std::cout << "Card (" << (int)r << "," << (int)c << ") should get flipped" << std::endl;
+                    this->grid[this->columns*r + c].cellContents->FlipCard();
+                    
+                    if(this->lastFourCards[0].cardNumber == this->grid[this->columns*r + c].cellContents->cardNumber)
+                    {
+                        PlayerScore++;
+                        
+                        this->lastFourCards.pop_back();
+                        this->lastFourCards.insert(this->grid[this->columns*r + c].cellContents)
+                        
+                        if(this->lastFourCards[1].cardNumber == this->lastFourCards[0].cardNumber)
+                        {
+                            PlayerScore++;
+                            if(this->lastFourCards[2].cardNumber = this->lastFourCards[1])
+                            {
+                                playerScore++;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

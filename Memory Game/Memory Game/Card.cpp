@@ -142,6 +142,11 @@ void Card::SetTransform(sf::Vector2f&& location, float&& rotation, float&& scale
     this->scale = scale;
 }
 
+sf::FloatRect Card::getGlobalBounds()
+{
+    return this->cardSprite.getGlobalBounds();
+}
+
 void Card::FlipCard()
 {
     if(this->fliped)

@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+int PlayerScore = 0;
+
 template<typename Type>
 void ShuffleArray(Type* array, uint8_t& length)
 {
@@ -59,19 +61,19 @@ int main(int argc, char const** argv)
 {
     Card::InitializeClass();
     
-    Card::FlipDeckCards();
+    //Card::FlipDeckCards();
     
     ShuffleArray<Card>(Card::deck, 52);
     
     
     //Card cards[] = {Card::deck[0],Card::deck[1],Card::deck[2],Card::deck[3]};
     
-    GridGenerator<Card>cardGrid(4,13,1920,1080,Card::deck);
+    GridGenerator<Card>cardGrid(4,13,0,0,1920,1080,Card::deck);
     
     cardGrid.ClampCellContents();
     cardGrid.SetCellTransforms();
     
-    std::cout << Card::deck[0] << std::endl;
+    //std::cout << Card::deck[0] << std::endl;
     
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML window");
@@ -98,6 +100,16 @@ int main(int argc, char const** argv)
             // Escape pressed: exit
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                 window.close();
+            }
+            if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
+            {
+                Card::FlipDeckCards();
+            }
+            
+            if(event.type == sf::Event::MouseButtonReleased)
+            {
+                sf::Vector2i location = sf::Mouse::getPosition(window);
+                cardGrid.HandleMouseEvent(location);
             }
         }
 

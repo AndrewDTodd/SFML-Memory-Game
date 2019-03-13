@@ -39,7 +39,7 @@ public:
     
     sf::FloatRect* cellsBoundingBoxes;
     
-    std::Vector<Type> lastFourCards;
+    Type* lastFourCards[3] = {nullptr, nullptr, nullptr};
     
     GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t& xPos, uint16_t& yPos, uint16_t&  width, uint16_t& height)
     :Transformable()
@@ -240,9 +240,15 @@ public:
     
     void HandleMouseEvent(sf::Vector2i location)
     {
+        extern int PlayerScore;
+        extern int TurnCount;
+        
+        /*
         std::cout << "Entering Mouse Event" << std::endl;
         
         std::cout << "Screen Space Mouse Position: (" << location.x << "," << location.y << ")" << std::endl;
+        */
+        
         for (uint8_t r = 0; r < this->rows; r++)
         {
             for (uint8_t  c = 0; c < this->columns; c++)
@@ -252,27 +258,103 @@ public:
                 << "Bounding Box left: " << this->cellsBoundingBoxes[this->columns*r + c].left << " right: " << this->cellsBoundingBoxes[this->columns*r + c].top << std::endl
                 << "Bounding Box width: " << this->cellsBoundingBoxes[this->columns*r + c].width << " height: " << this->cellsBoundingBoxes[this->columns*r + c].height << std::endl;
                 */
-                if(this->cellsBoundingBoxes[this->columns*r + c].contains(location.x,location.y))
+                //std::cout << "Card Flipped : " << this->grid[this->columns*r +c].cellContents->fliped << std::endl;
+                
+                if((this->cellsBoundingBoxes[this->columns*r + c].contains(location.x,location.y)) && (!this->grid[this->columns*r +c].cellContents->fliped))
                 {
-                    std::cout << "Card (" << (int)r << "," << (int)c << ") should get flipped" << std::endl;
+                    //std::cout << "Card (" << (int)r << "," << (int)c << ") should get flipped" << std::endl;
+                    std::cout << "Card to get flipped " << *this->grid[this->columns*r +c].cellContents << std::endl;
                     this->grid[this->columns*r + c].cellContents->FlipCard();
+                    std::cout << "Flipped Card " << *this->grid[this->columns*r +c].cellContents << std::endl;
                     
-                    if(this->lastFourCards[0].cardNumber == this->grid[this->columns*r + c].cellContents->cardNumber)
+                    std::cout << "lastFourCards[0]: " << lastFourCards[0] << std::endl;
+                    if(this->lastFourCards[0])
                     {
-                        PlayerScore++;
+                        std::cout << "last card fliped value: " << lastFourCards[0]->fliped << std::endl;
                         
-                        this->lastFourCards.pop_back();
-                        this->lastFourCards.insert(this->grid[this->columns*r + c].cellContents)
-                        
-                        if(this->lastFourCards[1].cardNumber == this->lastFourCards[0].cardNumber)
+                        std::cout << "was there a lastFourCards[0]" << std::endl;
+                        if(this->lastFourCards[0]->cardNumber == this->grid[this->columns*r + c].cellContents->cardNumber)
                         {
                             PlayerScore++;
-                            if(this->lastFourCards[2].cardNumber = this->lastFourCards[1])
+                            
+                            if(this->lastFourCards[1])
                             {
-                                playerScore++;
+                                if(this->lastFourCards[1]->cardNumber == this->lastFourCards[0]->cardNumber)
+                                {
+                                    PlayerScore++;
+                                    
+                                    if(this->lastFourCards[2])
+                                    {
+                                        if(this->lastFourCards[2]->cardNumber == this->lastFourCards[0]->cardNumber)
+                                        {
+                                            PlayerScore++;
+                                        }
+                                        else
+                                        {
+                                            this->removeCards(lastFourCards[0]->cardNumber);
+                                            
+                                            this->lastFourCards[2] = this->lastFourCards[1];
+                                            this->lastFourCards[1] = this->lastFourCards[0];
+                                            this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
+                                            
+                                            std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
+                                            std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
+                                            std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
+                                            
+                                            return;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //this->grid[this->columns*r + c].cellContents->FlipCard();
+                                    this->removeCards(lastFourCards[0]->cardNumber);
+                                    
+                                    this->lastFourCards[2] = this->lastFourCards[1];
+                                    this->lastFourCards[1] = this->lastFourCards[0];
+                                    this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
+                                    
+                                    std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
+                                    std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
+                                    std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
+                                    
+                                    return;
+                                }
                             }
                         }
+                        else
+                        {
+                            std::cout << *lastFourCards[0] << std::endl;
+                            if(this->lastFourCards[0]->fliped)
+                            {
+                                this->lastFourCards[0]->FlipCard();
+                            }
+                            
+                            this->lastFourCards[2] = this->lastFourCards[1];
+                            this->lastFourCards[1] = this->lastFourCards[0];
+                            this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
+                            
+                            std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
+                            std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
+                            std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
+                            
+                            return;
+                        }
                     }
+                   
+                    
+                    this->lastFourCards[2] = this->lastFourCards[1];
+                    this->lastFourCards[1] = this->lastFourCards[0];
+                    this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
+                    
+                    std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
+                    std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
+                    std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
+                    
+                    TurnCount++;
+                    
+                    return;
+                    
                 }
             }
         }
@@ -298,7 +380,22 @@ public:
         {
             for(uint8_t u = 0; u < this->columns; u++)
             {
-                target.draw(*(Type*)this->grid[this->columns*i + u].cellContents);
+                if(this->grid[this->columns*i + u].cellContents)
+                    target.draw(*(Type*)this->grid[this->columns*i + u].cellContents);
+            }
+        }
+    }
+    
+    void removeCards(uint8_t& cardNumber)
+    {
+        for(uint8_t r = 0; r < this->rows; r++)
+        {
+            for(uint8_t c = 0; c < this->columns; c++)
+            {
+                if(this->grid[this->columns*r + c].cellContents->cardNumber == cardNumber)
+                {
+                    this->grid[this->columns*r + c].cellContents = nullptr;
+                }
             }
         }
     }

@@ -25,6 +25,7 @@
 #include <time.h>
 
 int PlayerScore = 0;
+int TurnCount = 0;
 
 template<typename Type>
 void ShuffleArray(Type* array, uint8_t& length)
@@ -110,6 +111,9 @@ int main(int argc, char const** argv)
             {
                 sf::Vector2i location = sf::Mouse::getPosition(window);
                 cardGrid.HandleMouseEvent(location);
+                
+                std::cout << PlayerScore << std::endl;
+                std::cout << TurnCount << std::endl;
             }
         }
 

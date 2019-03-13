@@ -24,14 +24,13 @@ private:
     
     static std::string cardNames[52];
     
-    bool fliped = false;
-    
 public:
     
     sf::Vector2f dimentions;
     float scale;
     std::string* cardName;
     uint8_t cardNumber;
+    bool fliped = false;
     
     Card();
     Card(sf::IntRect cardTexRec, std::string* cardName, uint8_t& cardNumber);
@@ -64,7 +63,7 @@ public:
     {
         sf::Vector2f pos = card.cardSprite.getPosition();
         
-        stream << *card.cardName << " Card Number: " << (int)card.cardNumber << std::endl << "Location: (" << pos.x << "," << pos.y << ")";
+        stream << *card.cardName << " Card Number: " << (int)card.cardNumber << std::endl << "Location: (" << pos.x << "," << pos.y << ")" << "Card is fliped: " << card.fliped;
         
         return stream;
     }

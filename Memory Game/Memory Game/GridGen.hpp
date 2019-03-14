@@ -39,7 +39,7 @@ public:
     
     sf::FloatRect* cellsBoundingBoxes;
     
-    Type* lastFourCards[3] = {nullptr, nullptr, nullptr};
+    Type* lastThreeCards[3] = {nullptr, nullptr, nullptr};
     
     GridGenerator(uint8_t& rows, uint8_t& columns, uint16_t& xPos, uint16_t& yPos, uint16_t&  width, uint16_t& height)
     :Transformable()
@@ -243,119 +243,86 @@ public:
         extern int PlayerScore;
         extern int TurnCount;
         
-        /*
-        std::cout << "Entering Mouse Event" << std::endl;
         
-        std::cout << "Screen Space Mouse Position: (" << location.x << "," << location.y << ")" << std::endl;
-        */
-        
-        for (uint8_t r = 0; r < this->rows; r++)
+        bool stop = false;
+        for(uint8_t r = 0; r < this->rows && !stop; r++)
         {
-            for (uint8_t  c = 0; c < this->columns; c++)
+            for(uint8_t c = 0; c < this->columns && !stop; c++)
             {
-                /*
-                std::cout << "Cell : (" << (int)r << "," << (int)c << ")" << std::endl
-                << "Bounding Box left: " << this->cellsBoundingBoxes[this->columns*r + c].left << " right: " << this->cellsBoundingBoxes[this->columns*r + c].top << std::endl
-                << "Bounding Box width: " << this->cellsBoundingBoxes[this->columns*r + c].width << " height: " << this->cellsBoundingBoxes[this->columns*r + c].height << std::endl;
-                */
-                //std::cout << "Card Flipped : " << this->grid[this->columns*r +c].cellContents->fliped << std::endl;
-                
-                if((this->cellsBoundingBoxes[this->columns*r + c].contains(location.x,location.y)) && (!this->grid[this->columns*r +c].cellContents->fliped))
+                if(this->grid[this->columns*r +c].cellContents)
                 {
-                    //std::cout << "Card (" << (int)r << "," << (int)c << ") should get flipped" << std::endl;
-                    std::cout << "Card to get flipped " << *this->grid[this->columns*r +c].cellContents << std::endl;
-                    this->grid[this->columns*r + c].cellContents->FlipCard();
-                    std::cout << "Flipped Card " << *this->grid[this->columns*r +c].cellContents << std::endl;
-                    
-                    std::cout << "lastFourCards[0]: " << lastFourCards[0] << std::endl;
-                    if(this->lastFourCards[0])
+                    if((this->cellsBoundingBoxes[this->columns*r + c].contains(location.x,location.y)) && (!this->grid[this->columns*r +c].cellContents->fliped))
                     {
-                        std::cout << "last card fliped value: " << lastFourCards[0]->fliped << std::endl;
+                        this->grid[this->columns*r + c].cellContents->FlipCard();
                         
-                        std::cout << "was there a lastFourCards[0]" << std::endl;
-                        if(this->lastFourCards[0]->cardNumber == this->grid[this->columns*r + c].cellContents->cardNumber)
+                        //cheack to see if you are begining a new series of card pairs
+                        if(this->lastThreeCards[0])
                         {
-                            PlayerScore++;
-                            
-                            if(this->lastFourCards[1])
+                            //check to see if the last card you clicked on is the same kind as the one you just clicked on
+                            //if it is you get points and the searies continues
+                            if(this->lastThreeCards[0]->cardNumber == this->grid[this->columns*r + c].cellContents->cardNumber)
                             {
-                                if(this->lastFourCards[1]->cardNumber == this->lastFourCards[0]->cardNumber)
+                                PlayerScore++;
+                                
+                                //check to see if you are clicking on a third card now
+                                if(this->lastThreeCards[1])
                                 {
                                     PlayerScore++;
                                     
-                                    if(this->lastFourCards[2])
+                                    if(this->lastThreeCards[2])
                                     {
-                                        if(this->lastFourCards[2]->cardNumber == this->lastFourCards[0]->cardNumber)
-                                        {
-                                            PlayerScore++;
-                                        }
-                                        else
-                                        {
-                                            this->removeCards(lastFourCards[0]->cardNumber);
-                                            
-                                            this->lastFourCards[2] = this->lastFourCards[1];
-                                            this->lastFourCards[1] = this->lastFourCards[0];
-                                            this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
-                                            
-                                            std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
-                                            std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
-                                            std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
-                                            
-                                            return;
-                                        }
+                                        PlayerScore++;
+                                        
+                                        this->removeCards(this->lastThreeCards[2]->cardNumber);
+                                    }
+                                    else
+                                    {
+                                        this->lastThreeCards[2] = this->lastThreeCards[1];
+                                        this->lastThreeCards[1] = this->lastThreeCards[0];
+                                        this->lastThreeCards[0] = this->grid[this->columns*r + c].cellContents;
                                     }
                                 }
+                                //if not we will keep track of the last two you clicked on because they are a pair
                                 else
                                 {
-                                    //this->grid[this->columns*r + c].cellContents->FlipCard();
-                                    this->removeCards(lastFourCards[0]->cardNumber);
+                                    this->lastThreeCards[1] = this->lastThreeCards[0];
+                                    this->lastThreeCards[0] = this->grid[this->columns*r + c].cellContents;
+                                }
+                            }
+                            //if the cards arnt the same, you get no points and the lastThreeCards needs to be reset for a new series
+                            else
+                            {
+                                this->lastThreeCards[0]->FlipCard();
+                                this->lastThreeCards[0] = this->grid[this->columns*r + c].cellContents;
+                                
+                                if(this->lastThreeCards[1])
+                                {
+                                    this->removeCards(this->lastThreeCards[1]->cardNumber);
                                     
-                                    this->lastFourCards[2] = this->lastFourCards[1];
-                                    this->lastFourCards[1] = this->lastFourCards[0];
-                                    this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
-                                    
-                                    std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
-                                    std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
-                                    std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
-                                    
-                                    return;
+                                    this->lastThreeCards[2] = nullptr;
+                                    this->lastThreeCards[1] = nullptr;
+                                    //this->lastThreeCards[0] = nullptr;
                                 }
                             }
                         }
                         else
                         {
-                            std::cout << *lastFourCards[0] << std::endl;
-                            if(this->lastFourCards[0]->fliped)
-                            {
-                                this->lastFourCards[0]->FlipCard();
-                            }
-                            
-                            this->lastFourCards[2] = this->lastFourCards[1];
-                            this->lastFourCards[1] = this->lastFourCards[0];
-                            this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
-                            
-                            std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
-                            std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
-                            std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
-                            
-                            return;
+                            this->lastThreeCards[0] = this->grid[this->columns*r +c].cellContents;
                         }
+                        
+                        TurnCount++;
+                        
+                        stop = true;
                     }
-                   
-                    
-                    this->lastFourCards[2] = this->lastFourCards[1];
-                    this->lastFourCards[1] = this->lastFourCards[0];
-                    this->lastFourCards[0] = this->grid[this->columns*r + c].cellContents;
-                    
-                    std::cout << "lastFourCards[0]: " << this->lastFourCards[0] << std::endl;
-                    std::cout << "lastFourCards[1]: " << this->lastFourCards[1] << std::endl;
-                    std::cout << "lastFourCards[2]: " << this->lastFourCards[2] << std::endl;
-                    
-                    TurnCount++;
-                    
-                    return;
-                    
                 }
+            }
+        }
+        
+        if((this->lastThreeCards[1]))
+        {
+            if(this->lastThreeCards[0]->cardNumber == this->lastThreeCards[1]->cardNumber)
+            {
+                PlayerScore++;
             }
         }
     }
@@ -388,16 +355,23 @@ public:
     
     void removeCards(uint8_t& cardNumber)
     {
+        extern uint8_t CardCount;
+        
         for(uint8_t r = 0; r < this->rows; r++)
         {
             for(uint8_t c = 0; c < this->columns; c++)
             {
-                if(this->grid[this->columns*r + c].cellContents->cardNumber == cardNumber)
+                if(this->grid[this->columns*r +c].cellContents)
                 {
-                    this->grid[this->columns*r + c].cellContents = nullptr;
+                    if(this->grid[this->columns*r + c].cellContents->cardNumber == cardNumber)
+                    {
+                        this->grid[this->columns*r + c].cellContents = nullptr;
+                    }
                 }
             }
         }
+        
+        CardCount -= 4;
     }
 };
 #endif

@@ -26,6 +26,7 @@
 
 int PlayerScore = 0;
 int TurnCount = 0;
+uint8_t CardCount = 52;
 
 template<typename Type>
 void ShuffleArray(Type* array, uint8_t& length)
@@ -112,8 +113,9 @@ int main(int argc, char const** argv)
                 sf::Vector2i location = sf::Mouse::getPosition(window);
                 cardGrid.HandleMouseEvent(location);
                 
-                std::cout << PlayerScore << std::endl;
-                std::cout << TurnCount << std::endl;
+                
+                
+                std::cout << (int)CardCount << std::endl;
             }
         }
 
@@ -124,6 +126,13 @@ int main(int argc, char const** argv)
 
         // Update the window
         window.display();
+        
+        if(CardCount <= 0)
+        {
+            window.close();
+            std::cout << std::endl << std::endl << "Your Final score was: " << PlayerScore << std::endl;
+            std::cout << "You took " << TurnCount << " turns to compleat the game" << std::endl;
+        }
     }
 
     return EXIT_SUCCESS;

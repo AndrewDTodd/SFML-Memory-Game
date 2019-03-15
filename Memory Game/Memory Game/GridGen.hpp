@@ -274,6 +274,8 @@ public:
                                         PlayerScore++;
                                         
                                         this->removeCards(this->lastThreeCards[2]->cardNumber);
+                                        
+                                        this->lastThreeCards[2] = this->lastThreeCards[1] = this->lastThreeCards[0] = nullptr;
                                     }
                                     else
                                     {

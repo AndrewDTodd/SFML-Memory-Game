@@ -6,6 +6,19 @@
 //  Copyright © 2019 Andrew Todd. All rights reserved.
 //
 
+//-----------------------------------------------------
+/*
+    The card class is a SFML aware class the is used to represent the games cards
+    Each instance of a card has its own face texture, name and cardNumber - used to avaluate pairs -
+ 
+    The class maintains a static array of Cards that constitutes a standard 52 card playing deck
+ 
+    *******************************************************************************************
+    The initialize function must be called before any Card instanses can be made
+    The initialize function loads in the nessisary textures and sets initial class wide values
+    *******************************************************************************************
+*/
+
 #ifndef Card_hpp
 #define Card_hpp
 

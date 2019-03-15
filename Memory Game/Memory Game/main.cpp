@@ -15,6 +15,25 @@
 // - Click OK.
 //
 
+//
+//  Memory Game
+//
+//  Created by Andrew Todd on 2/21/19.
+//  Copyright © 2019 Andrew Todd. All rights reserved.
+//
+
+//---------------------------------------------------------------------------
+/*
+    Memory Game is a simple card flipping memory game that is built on top of SFML
+ 
+    ******************************************************************************
+    This means you need SFML Framework to compile and need to follow the above instructions in the above disclaimer from the SFML team
+    ******************************************************************************
+ 
+ //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ---->The game allows the player to flip all the cards by pressing the Enter/Return key<----
+*/
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -24,10 +43,19 @@
 #include <stdlib.h>
 #include <time.h>
 
+
+//this global variable is incremented by the game board ("grid") HandleMouseEvent method
+//player is awarded points for finding pairs, and then three or four of a kind
 int PlayerScore = 0;
+//this global variable is incremented by the game board ("grid") HandleMouseEvent method
+//increased for every card flip
 int TurnCount = 0;
+//maintains the number of cards cerently on the board
 uint8_t CardCount = 52;
 
+
+//simple swap shuffle function
+//used to shuffle the Card::deck
 template<typename Type>
 void ShuffleArray(Type* array, uint8_t& length)
 {
@@ -43,6 +71,8 @@ void ShuffleArray(Type* array, uint8_t& length)
         array[index] = holder;
     }
 }
+//simple swap shuffle function
+//used to shuffle the Card::deck
 template<typename Type>
 void ShuffleArray(Type* array, uint8_t&& length)
 {
@@ -61,6 +91,8 @@ void ShuffleArray(Type* array, uint8_t&& length)
 
 int main(int argc, char const** argv)
 {
+    //must be called
+    //creates the Card::deck array used for the game
     Card::InitializeClass();
     
     //Card::FlipDeckCards();
@@ -107,26 +139,25 @@ int main(int argc, char const** argv)
             {
                 Card::FlipDeckCards();
             }
-            
+            //for mouse clicks send location to cardGrid for event handling
             if(event.type == sf::Event::MouseButtonReleased)
             {
                 sf::Vector2i location = sf::Mouse::getPosition(window);
                 cardGrid.HandleMouseEvent(location);
-                
-                
-                
-                std::cout << (int)CardCount << std::endl;
             }
         }
 
         // Clear screen
         window.clear();
 
+        //gridGen is SFML aware and so is Card
+        //they both have sf::Draw functionality being inherited from sf::Drawable
         window.draw(cardGrid);
 
         // Update the window
         window.display();
         
+        //when there are no more cards, close the game and display user points and turn count
         if(CardCount <= 0)
         {
             window.close();

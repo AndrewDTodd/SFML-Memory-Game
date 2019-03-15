@@ -6,6 +6,16 @@
 //  Copyright © 2019 Andrew Todd. All rights reserved.
 //
 
+
+//-----------------------------------------------------
+/*
+    Template class GridGenerator is used to generate Grids of any given object.
+    Maintains a pointer to an array of GridCell structs, also a templated object, that represent the grid's cells
+    Each GridCell in turn maintains a pointer to the object in is "holding"
+ 
+    For the purposes of this game the objects are Cards, defined in Card.hpp
+*/
+
 #ifndef GRID_GEN_H
 #define GRID_GEN_H
 

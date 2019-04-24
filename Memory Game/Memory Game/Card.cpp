@@ -40,7 +40,7 @@ Card::Card(sf::IntRect cardTexRec, std::string* cardName, uint8_t& cardNumber)
     
     sf::IntRect rec = cardSprite.getTextureRect();
     
-    this->dimentions = sf::Vector2f(rec.width, rec.height);
+    this->dimensions = sf::Vector2f(rec.width, rec.height);
     
     this->scale = 1;
 }
@@ -60,7 +60,7 @@ Card::Card(Card& cardToCopy)
     this->cardSprite.setScale(cardToCopy.cardSprite.getScale());
     this->cardFrontTexture = cardToCopy.cardFrontTexture;
     this->cardName = cardToCopy.cardName;
-    this->dimentions = cardToCopy.dimentions;
+    this->dimensions = cardToCopy.dimensions;
     this->scale = cardToCopy.scale;
     this->cardNumber = cardToCopy.cardNumber;
 }

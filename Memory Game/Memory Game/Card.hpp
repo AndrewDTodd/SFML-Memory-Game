@@ -39,7 +39,7 @@ private:
     
 public:
     
-    sf::Vector2f dimentions;
+    sf::Vector2f dimensions;
     float scale;
     std::string* cardName;
     uint8_t cardNumber;

@@ -135,7 +135,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "368"
             endingLineNumber = "368"
-            landmarkName = "draw(sf::RenderTarget&amp; target, sf::RenderStates states)"
+            landmarkName = "removeCards(uint8_t&amp; cardNumber)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
